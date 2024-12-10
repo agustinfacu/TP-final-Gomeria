@@ -1,79 +1,72 @@
 package main.controlador;
 
+import main.modelo.garaje.Caja;
 import main.modelo.garaje.Estadisticas;
 import main.vista.VistaGomeria;
-import main.modelo.ABM.VehiculoManager;
+import main.modelo.garaje.ABM.VehiculoManager;
+import main.modelo.garaje.ABM.ModificarVehiculo;
 
 import javax.swing.*;
 import java.awt.*;
-import java.text.NumberFormat;
 
 public class GarajeController {
-    private VehiculoManager vehiculoManager;
-    private VistaGomeria vistaGomeria;
     private String[] menuOptions;
     private boolean isTestMode;
-    private Estadisticas estadisticas;  // Instanciamos la clase Estadisticas
+    private VistaGomeria vistaGomeria;
+    private VehiculoManager vehiculoManager;
+    private Estadisticas estadisticas;
+    private double[] precios; // Array para almacenar los precios de neumáticos
 
     public GarajeController(String[] menuOptions, boolean isTestMode) {
         this.menuOptions = menuOptions;
         this.isTestMode = isTestMode;
         this.vistaGomeria = new VistaGomeria(menuOptions);
-        this.vehiculoManager = new VehiculoManager(vistaGomeria, isTestMode);
-        this.estadisticas = new Estadisticas();  // Instanciamos la clase Estadisticas
+
+        if (isTestMode) {
+            // Valores predeterminados para modo de prueba
+            this.precios = new double[]{3000, 1500};
+        } else {
+            // Solicitar precios al usuario en modo normal
+            this.precios = solicitarPrecios();
+        }
+
+        int capacidadMaxima;
+        if (isTestMode) {
+            capacidadMaxima = 100; // Valor fijo para pruebas
+        } else {
+            capacidadMaxima = vistaGomeria.mostrarMenuInicial(); // Solicitar al usuario
+        }
+
+        this.vehiculoManager = new VehiculoManager(isTestMode, capacidadMaxima, precios);
+        this.estadisticas = new Estadisticas();
     }
 
-    // Mostrar las estadísticas del kilometraje medio en un JDialog
-    public void mostrarEstadisticas() {
-        double kilometrajeMedio = estadisticas.calcularKilometrajeMedio();
-        double sumaKilometrajes = estadisticas.calcularSumaKilometrajes();
+    // Método para solicitar los precios de cambio de neumáticos
+    public double[] solicitarPrecios() {
+        double[] precios = new double[2];
 
-        // Crear un panel para mostrar el contenido de las estadísticas
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        // Precio para autos
+        String inputAuto = JOptionPane.showInputDialog(null, "Ingrese el valor del cambio de neumáticos para autos:");
+        try {
+            precios[0] = Double.parseDouble(inputAuto); // Convertir la entrada a double
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Por favor, ingrese un número válido.");
+            return null; // Indica error si no es un número válido
+        }
 
-        // Fórmula del cálculo (se muestra primero)
-        JLabel formulaLabel = new JLabel("<html><b>Fórmula:</b> (Suma de kilometrajes) / (Cantidad de vehículos)</html>");
-        formulaLabel.setFont(new Font("Arial", Font.PLAIN, 14)); // Font correcta
-        formulaLabel.setAlignmentX(Component.CENTER_ALIGNMENT);  // Centrado
-        panel.add(formulaLabel);
+        // Precio para motos
+        String inputMoto = JOptionPane.showInputDialog(null, "Ingrese el valor del cambio de neumáticos para motos:");
+        try {
+            precios[1] = Double.parseDouble(inputMoto); // Convertir la entrada a double
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Por favor, ingrese un número válido.");
+            return null; // Indica error si no es un número válido
+        }
 
-        // Suma total de kilometrajes (se muestra después de la fórmula)
-        JLabel sumaKilometrajesLabel = new JLabel("<html><b>Suma Total de Kilometrajes:</b> " + formatNumber(sumaKilometrajes) + "</html>");
-        sumaKilometrajesLabel.setFont(new Font("Arial", Font.PLAIN, 14)); // Font correcta
-        sumaKilometrajesLabel.setAlignmentX(Component.CENTER_ALIGNMENT);  // Centrado
-        panel.add(sumaKilometrajesLabel);
-
-        // Kilometraje medio (se muestra último y con fuente más grande)
-        JLabel kilometrajeMedioLabel = new JLabel("<html><b>Kilometraje Medio:</b> " + (kilometrajeMedio) + "</html>");
-        kilometrajeMedioLabel.setFont(new Font("Arial", Font.BOLD, 18)); // Fuente más grande y negrita
-        kilometrajeMedioLabel.setAlignmentX(Component.CENTER_ALIGNMENT);  // Centrado
-        panel.add(kilometrajeMedioLabel);
-
-        // Crear el JDialog
-        JDialog dialog = new JDialog(vistaGomeria.getFrame(), "Estadísticas de Kilometraje", true);
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialog.setLayout(new BorderLayout());
-        dialog.add(panel, BorderLayout.CENTER);
-
-        // Tamaño y visibilidad
-        dialog.setSize(400, 250);
-        dialog.setLocationRelativeTo(vistaGomeria.getFrame()); // Centrar respecto a la ventana principal
-        dialog.setVisible(true);
+        return precios;
     }
 
-    // Método para formatear los valores a formato de moneda (en este caso, formato argentino) para el kilometraje medio
-    private String formatCurrency(double amount) {
-        java.text.NumberFormat currencyFormat = java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("es", "AR"));
-        return currencyFormat.format(amount);
-    }
-
-    // Método para formatear los números sin símbolo de moneda para el kilometraje total
-    private String formatNumber(double amount) {
-        return String.format("%,.0f", amount);  // Formato sin decimales y con separador de miles si es necesario
-    }
-
+    // Método para iniciar el controlador y mostrar el menú principal
     public void iniciar() {
         boolean continuar = true;
         while (continuar) {
@@ -88,52 +81,60 @@ public class GarajeController {
                 // Menú para GarajeTest (modo prueba)
                 switch (opcion) {
                     case 0:
-                        // Implementar lógica para "Importar Vehículos" si es necesario
-                        // O si el importado se debe hacer al iniciar el sistema
+                        // Importar vehículos de prueba
                         vehiculoManager.importarVehiculosDePrueba();
                         break;
                     case 1:
-                        vehiculoManager.consultarVehiculos(vistaGomeria.getFrame()); // Correcto: Opción 2 para consultar vehículos en GarajeTest
+                        // Consultar vehículos
+                        vehiculoManager.consultarVehiculos(vistaGomeria.getFrame());
                         break;
                     case 2:
+                        // Mostrar caja
                         vehiculoManager.mostrarCaja();
                         break;
                     case 3:
-                        mostrarEstadisticas(); // Llamada a la opción de estadísticas
+                        // Mostrar estadísticas
+                        mostrarEstadisticas();
                         break;
                     case 4:
-                        continuar = false; // Salir
+                        continuar = false;
                         break;
                     default:
-                        continuar = false; // Salir en caso de opción no válida
+                        continuar = false;
                         break;
                 }
             } else {
                 // Menú para App (modo aplicación normal)
                 switch (opcion) {
                     case 0:
+                        // Ingresar vehículo
                         vehiculoManager.ingresarVehiculo();
                         break;
                     case 1:
+                        // Retirar vehículo
                         vehiculoManager.retirarVehiculo();
                         break;
                     case 2:
-                        vehiculoManager.consultarVehiculos(vistaGomeria.getFrame()); // Consultar vehículos en el modo normal (case 2)
+                        // Consultar vehículos
+                        vehiculoManager.consultarVehiculos(vistaGomeria.getFrame());
                         break;
                     case 3:
+                        // Mostrar caja
                         vehiculoManager.mostrarCaja();
                         break;
                     case 4:
-                        mostrarEstadisticas(); // Llamada a la opción de estadísticas
+                        // Mostrar estadísticas
+                        mostrarEstadisticas();
                         break;
                     case 5:
-                        vehiculoManager.modificarVehiculo();
+                        // Modificar vehículo
+                        ModificarVehiculo.modificarVehiculo();
                         break;
                     case 6:
-                        continuar = false; // Salir
+                        continuar = false;
                         break;
                     default:
-                        continuar = false; // Salir en caso de opción no válida
+                        continuar = false;
                         break;
                 }
             }
@@ -141,5 +142,25 @@ public class GarajeController {
 
         // Salir de la aplicación
         System.exit(0);
+    }
+
+    // Mostrar las estadísticas del kilometraje medio en un JDialog
+    public void mostrarEstadisticas() {
+        double kilometrajeMedio = estadisticas.calcularKilometrajeMedio();
+        double sumaKilometrajes = estadisticas.calcularSumaKilometrajes();
+        int cantidadVehiculos = vehiculoManager.getCantidadVehiculos();
+        
+        vistaGomeria.mostrarEstadisticas(kilometrajeMedio, sumaKilometrajes, cantidadVehiculos);
+    }
+
+    // Método para formatear los valores a formato de moneda (en este caso, formato argentino) para el kilometraje medio
+    private String formatCurrency(double amount) {
+        java.text.NumberFormat currencyFormat = java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("es", "AR"));
+        return currencyFormat.format(amount);
+    }
+
+    // Método para formatear los números sin símbolo de moneda para el kilometraje total
+    private String formatNumber(double amount) {
+        return String.format("%,.0f", amount); // Formato sin decimales y con separador de miles si es necesario
     }
 }

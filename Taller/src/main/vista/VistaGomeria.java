@@ -1,6 +1,7 @@
 package main.vista;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class VistaGomeria {
     public static final String[] COLORES = {
@@ -50,12 +51,28 @@ public class VistaGomeria {
         return Integer.parseInt(input);
     }
 
-    public double[] solicitarPrecios() {
+    public static double[] solicitarPrecios() {
         double[] precios = new double[2];
-        precios[0] = Double.parseDouble(JOptionPane.showInputDialog(null, "Ingrese el valor del cambio de neumáticos para autos:"));
-        precios[1] = Double.parseDouble(JOptionPane.showInputDialog(null, "Ingrese el valor del cambio de neumáticos para motos:"));
+    
+        String inputAuto = JOptionPane.showInputDialog(null, "Ingrese el valor del cambio de neumáticos para autos:");
+        try {
+            precios[0] = Double.parseDouble(inputAuto); // Convertir la entrada a double
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Por favor, ingrese un número válido.");
+            return null; // Indica error si no es un número válido
+        }
+    
+        String inputMoto = JOptionPane.showInputDialog(null, "Ingrese el valor del cambio de neumáticos para motos:");
+        try {
+            precios[1] = Double.parseDouble(inputMoto); // Convertir la entrada a double
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Por favor, ingrese un número válido.");
+            return null; // Indica error si no es un número válido
+        }
+    
         return precios;
     }
+    
 
     public String seleccionarColor(String mensaje) {
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(COLORES);
@@ -101,5 +118,65 @@ public class VistaGomeria {
                 return seleccion;
             }
         }
+    }
+    public void mostrarEstadisticas(double kilometrajeMedio, double sumaKilometrajes, int cantidadVehiculos) {
+        // Crear un panel para mostrar el contenido de las estadísticas
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Encabezado con la fórmula del cálculo
+        JLabel formulaLabel = new JLabel("<html><b>Fórmula:</b> (Suma de kilometrajes) / (Cantidad de vehículos)</html>");
+        formulaLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        formulaLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(formulaLabel);
+
+        // Tabla con la cantidad total de vehículos y la suma de kilometrajes
+        JPanel tablaPanel = new JPanel();
+        tablaPanel.setLayout(new BoxLayout(tablaPanel, BoxLayout.Y_AXIS));
+        tablaPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        String[] columnNames = {"Descripción", "Cantidad"};
+        Object[][] data = {
+            {"Total de vehículos", cantidadVehiculos},
+            {"Suma total de kilometrajes", formatNumber(sumaKilometrajes)}
+        };
+
+        JTable tabla = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(tabla);
+        scrollPane.setPreferredSize(new Dimension(300, 100));
+        tablaPanel.add(scrollPane);
+        panel.add(tablaPanel);
+
+        // Pie de página con la media total de kilómetros
+        JLabel mediaLabel = new JLabel("<html><b>Media total de kilómetros:</b> " + formatNumber(kilometrajeMedio) + "</html>");
+        mediaLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        mediaLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(mediaLabel);
+
+        // Crear un JDialog
+        JDialog dialog = new JDialog(getFrame(), "Estadísticas de Kilometraje", true);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setLayout(new BorderLayout());
+        dialog.add(panel, BorderLayout.CENTER);
+        dialog.setSize(400, 300);
+        dialog.setLocationRelativeTo(getFrame());
+
+        // Crear un botón de "Volver"
+        JButton volverButton = new JButton("Volver al Menú Principal");
+        volverButton.addActionListener(e -> dialog.dispose());
+
+        // Crear un panel para el botón
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(volverButton);
+
+        // Añadir el panel del botón al panel principal
+        panel.add(buttonPanel);
+
+        dialog.setVisible(true);
+    }
+
+    private String formatNumber(double amount) {
+        return String.format("%,.0f", amount); // Formato sin decimales y con separador de miles
     }
 }

@@ -13,7 +13,7 @@ public class Garaje {
     private QuitarAuto quitarAuto;
     private AgregarMoto agregarMoto;
     private QuitarMoto quitarMoto;
-    private Precios precios;
+    private Caja precios;
     private Estadisticas estadisticas;
 
     // Modificación: ahora se reciben dos precios, uno para autos y otro para motos
@@ -23,7 +23,7 @@ public class Garaje {
         this.quitarAuto = new QuitarAuto();
         this.agregarMoto = new AgregarMoto();
         this.quitarMoto = new QuitarMoto();
-        this.precios = new Precios(precioCambioRuedaAuto, precioCambioRuedaMoto); // Inicialización corregida
+        this.precios = new Caja(precioCambioRuedaAuto, precioCambioRuedaMoto); // Inicialización corregida
         this.estadisticas = new Estadisticas();
     }
 
