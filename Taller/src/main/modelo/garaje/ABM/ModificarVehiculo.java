@@ -135,4 +135,12 @@ public class ModificarVehiculo {
             }
         }
     }
+
+    //getter y setters
+    public static void setVehiculos(List<Vehiculo> vehiculosList) {vehiculos = vehiculosList;}
+
+    public static void setMotos(List<Moto> motos) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setMotos'");
+    }
 }

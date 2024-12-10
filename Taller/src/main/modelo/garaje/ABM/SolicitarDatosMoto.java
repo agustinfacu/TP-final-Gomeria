@@ -13,7 +13,12 @@ public class SolicitarDatosMoto {
 
     private static VistaGomeria vistaGomeria;
     private static List<Vehiculo> vehiculos;
-    
+    private static List<Moto> motos;
+    // Setter para inicializar vistaGomeria
+    public static void setVistaGomeria(VistaGomeria vista) {vistaGomeria = vista;}
+    // Setter para inicializar la lista de vehículos
+    public static void setVehiculos(List<Vehiculo> vehiculosList) {vehiculos = vehiculosList;}
+
     public static Moto solicitarDatosMoto() {
         String color = vistaGomeria.seleccionarColor("Seleccione el color de la moto:");
         String marca = vistaGomeria.seleccionarMarca("Seleccione la marca de la moto:", VistaGomeria.MARCAS_MOTOS);
@@ -57,4 +62,5 @@ public class SolicitarDatosMoto {
 
         return new Moto(vehiculos.size() + 1, color, marca, kilometraje, numeroChasis, numeroMotor, patente, cilindrada, cantidadRuedas);
     }
+    
 }

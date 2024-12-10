@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VehiculosDePrueba {
+    private List<Moto> motos;
+
 
     public List<Vehiculo> importarVehiculos() {
         List<Vehiculo> vehiculos = new ArrayList<>();
@@ -64,4 +66,6 @@ public class VehiculosDePrueba {
         }
         return vehiculos;
     }
+
+    public List<Moto> getMotos() {return motos; }
 }

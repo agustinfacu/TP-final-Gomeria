@@ -11,17 +11,21 @@ import main.vista.VistaGomeria;
 
 public class SolicitarDatosAuto {
 
-    private static VistaGomeria vistaGomeria;
+    public static VistaGomeria vistaGomeria;
     private static List<Vehiculo> vehiculos;
-            
-        public static Auto solicitarDatosAuto() {
-            String color = vistaGomeria.seleccionarColor("Seleccione el color del auto:");
-            String marca = vistaGomeria.seleccionarMarca("Seleccione la marca del auto:", VistaGomeria.MARCAS_AUTOS);
+    //getter y setter
+    public static void setVistaGomeria(VistaGomeria vista) {vistaGomeria = vista;}
+    public static void setVehiculos(List<Vehiculo> vehiculosList) {vehiculos = vehiculosList;}
+    
+    public static Auto solicitarDatosAuto() {
+
+        String color = vistaGomeria.seleccionarColor("Seleccione el color del auto:");
+        String marca = vistaGomeria.seleccionarMarca("Seleccione la marca del auto:", VistaGomeria.MARCAS_AUTOS);
         
-            boolean esNueva = JOptionPane.showConfirmDialog(null, "¿La patente es nueva?", "Tipo de Patente", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+        boolean esNueva = JOptionPane.showConfirmDialog(null, "¿La patente es nueva?", "Tipo de Patente", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
         
-            String patente;
-                do {
+         String patente;
+            do {
                     String formato = esNueva ? "AA123BB (7 caracteres)" : "AAA123 (6 caracteres)";
                     patente = JOptionPane.showInputDialog("Ingrese la patente del auto (Formato: " + formato + "):");
                     if (!Validaciones.validarPatente(patente, esNueva)) {
@@ -30,7 +34,7 @@ public class SolicitarDatosAuto {
                     }
                 } while (!Validaciones.validarPatente(patente, esNueva));
         
-                int kilometraje = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el kilometraje del auto:"));
+            int kilometraje = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el kilometraje del auto:"));
         
             String numeroChasis;
                 do {
@@ -57,4 +61,5 @@ public class SolicitarDatosAuto {
         
                 return new Auto(vehiculos.size() + 1, color, marca, patente, kilometraje, numeroChasis, numeroMotor, cantidadPuertas, cantidadRuedas);
         }
+
 }

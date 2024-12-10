@@ -2,14 +2,21 @@ package main.modelo.garaje.ABM;
 
 import main.modelo.garaje.*;
 import main.modelo.vehiculos.*;
+import main.vista.VistaGomeria;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
+
 import java.awt.*;
 
 public class VehiculoManager {
@@ -18,6 +25,10 @@ public class VehiculoManager {
     private Estadisticas estadisticas;
     private List<Vehiculo> vehiculos;
     private VehiculosDePrueba vehiculosDePrueba;
+    private static List<Moto> motos;
+    //getter y setters
+    public List<Vehiculo> getVehiculos() {return vehiculos;}
+    public List<Moto> getMotos() {return motos;}
 
     public VehiculoManager(boolean isTestMode, int capacidadMaxima, double[] preciosValores) {
 
@@ -55,6 +66,12 @@ public class VehiculoManager {
                 null,
                 options,
                 options[0]);
+                
+                VistaGomeria vistaGomeria = new VistaGomeria(new String[]{});
+                SolicitarDatosMoto.setVistaGomeria(vistaGomeria);
+                SolicitarDatosMoto.setVehiculos(vehiculos); 
+                SolicitarDatosAuto.setVistaGomeria(new VistaGomeria(new String[]{}));
+                SolicitarDatosAuto.setVehiculos(vehiculos);
 
         if (tipoVehiculo == 0) {
             Auto auto = SolicitarDatosAuto.solicitarDatosAuto();
@@ -109,11 +126,16 @@ public class VehiculoManager {
     }
 
     public void mostrarEstadisticas() {
-        double kilometrajeMedio = estadisticas.calcularKilometrajeMedio();
-        JOptionPane.showMessageDialog(null, "Kilometraje medio de todos los vehículos en el garaje: " + kilometrajeMedio);
+        // Calcular el kilometraje medio y la suma de los kilometrajes
+        double kilometrajeMedio = estadisticas.calcularKilometrajeMedio(vehiculos);
+        double sumaKilometrajes = estadisticas.calcularSumaKilometrajes(vehiculos);
+        
+        // Pasar los datos a VistaGomeria para mostrar la ventana
+        VistaGomeria vistaGomeria = new VistaGomeria(new String[]{});
+        vistaGomeria.mostrarEstadisticas(kilometrajeMedio, sumaKilometrajes, vehiculos.size(), vehiculos);
     }
+    
 
-   
     public Caja getPrecios() {
         return precios;
     }

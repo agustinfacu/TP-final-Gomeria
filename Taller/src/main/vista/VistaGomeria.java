@@ -1,9 +1,13 @@
 package main.vista;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.util.List;
+import main.modelo.vehiculos.Vehiculo;
 import java.awt.*;
 
 public class VistaGomeria {
+    
     public static final String[] COLORES = {
         "Rojo", "Azul", "Negro", "Blanco", "Gris", 
         "Verde", "Amarillo", "Naranja", "Violeta", "Marrón"
@@ -119,64 +123,58 @@ public class VistaGomeria {
             }
         }
     }
-    public void mostrarEstadisticas(double kilometrajeMedio, double sumaKilometrajes, int cantidadVehiculos) {
+    public void mostrarEstadisticas(double kilometrajeMedio, double sumaKilometrajes, int cantidadVehiculos, List<Vehiculo> vehiculos) {
         // Crear un panel para mostrar el contenido de las estadísticas
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        // Encabezado con la fórmula del cálculo
-        JLabel formulaLabel = new JLabel("<html><b>Fórmula:</b> (Suma de kilometrajes) / (Cantidad de vehículos)</html>");
+    
+        // Encabezado con el kilometraje medio
+        JLabel kilometrajeMedioLabel = new JLabel("Kilometraje Medio: " + String.format("%.2f", kilometrajeMedio) + " km");
+        kilometrajeMedioLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        kilometrajeMedioLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(kilometrajeMedioLabel);
+    
+        // Crear la tabla con la cantidad total de vehículos y la suma de kilometrajes
+        String[] columnNames = {"Descripción", "Valor"};
+        Object[][] data = {
+            {"Total de vehículos", cantidadVehiculos},
+            {"Suma total de kilometrajes", String.format("%.0f", sumaKilometrajes)}
+        };
+    
+        // Crear la tabla con los datos
+        JTable tabla = new JTable(data, columnNames); // No necesitamos hacer un cast aquí
+        JScrollPane scrollPane = new JScrollPane(tabla);
+        scrollPane.setPreferredSize(new Dimension(300, 100));
+        panel.add(scrollPane);
+    
+        // Mostrar la fórmula para el cálculo del kilometraje medio
+        JLabel formulaLabel = new JLabel("<html><i>Fórmula: Kilometraje Medio = Total de Kilómetros / Número de Vehículos</i></html>");
         formulaLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         formulaLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(formulaLabel);
-
-        // Tabla con la cantidad total de vehículos y la suma de kilometrajes
-        JPanel tablaPanel = new JPanel();
-        tablaPanel.setLayout(new BoxLayout(tablaPanel, BoxLayout.Y_AXIS));
-        tablaPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        String[] columnNames = {"Descripción", "Cantidad"};
-        Object[][] data = {
-            {"Total de vehículos", cantidadVehiculos},
-            {"Suma total de kilometrajes", formatNumber(sumaKilometrajes)}
-        };
-
-        JTable tabla = new JTable(data, columnNames);
-        JScrollPane scrollPane = new JScrollPane(tabla);
-        scrollPane.setPreferredSize(new Dimension(300, 100));
-        tablaPanel.add(scrollPane);
-        panel.add(tablaPanel);
-
-        // Pie de página con la media total de kilómetros
-        JLabel mediaLabel = new JLabel("<html><b>Media total de kilómetros:</b> " + formatNumber(kilometrajeMedio) + "</html>");
-        mediaLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        mediaLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(mediaLabel);
-
-        // Crear un JDialog
-        JDialog dialog = new JDialog(getFrame(), "Estadísticas de Kilometraje", true);
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialog.setLayout(new BorderLayout());
-        dialog.add(panel, BorderLayout.CENTER);
-        dialog.setSize(400, 300);
-        dialog.setLocationRelativeTo(getFrame());
-
-        // Crear un botón de "Volver"
+    
+        // Botón "Volver" al menú principal
         JButton volverButton = new JButton("Volver al Menú Principal");
-        volverButton.addActionListener(e -> dialog.dispose());
-
-        // Crear un panel para el botón
+        volverButton.addActionListener(e -> {
+            // Cerrar el JDialog
+            SwingUtilities.getWindowAncestor(volverButton).dispose();
+            // Aquí puedes agregar el código para regresar al menú principal
+        });
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonPanel.add(volverButton);
-
-        // Añadir el panel del botón al panel principal
         panel.add(buttonPanel);
-
-        dialog.setVisible(true);
+    
+        // Crear el JDialog con el panel de estadísticas
+        JDialog statsDialog = new JDialog((Frame) null, "Estadísticas de Kilometraje", true);
+        statsDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        statsDialog.setLayout(new BorderLayout());
+        statsDialog.add(panel, BorderLayout.CENTER);
+        statsDialog.setSize(600, 400);
+        statsDialog.setLocationRelativeTo(null); // Centrar la ventana
+        statsDialog.setResizable(true); // Hacer la ventana redimensionable
+        statsDialog.setVisible(true);
     }
-
-    private String formatNumber(double amount) {
-        return String.format("%,.0f", amount); // Formato sin decimales y con separador de miles
-    }
+    
 }

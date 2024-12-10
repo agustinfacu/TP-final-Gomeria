@@ -1,15 +1,17 @@
 package main.controlador;
 
-import main.modelo.garaje.Caja;
 import main.modelo.garaje.Estadisticas;
 import main.vista.VistaGomeria;
 import main.modelo.garaje.ABM.VehiculoManager;
+import main.modelo.vehiculos.Vehiculo;
 import main.modelo.garaje.ABM.ModificarVehiculo;
 
+import java.util.List;
+
 import javax.swing.*;
-import java.awt.*;
 
 public class GarajeController {
+    private List<Vehiculo> vehiculos;
     private String[] menuOptions;
     private boolean isTestMode;
     private VistaGomeria vistaGomeria;
@@ -94,7 +96,7 @@ public class GarajeController {
                         break;
                     case 3:
                         // Mostrar estadísticas
-                        mostrarEstadisticas();
+                        vehiculoManager.mostrarEstadisticas();
                         break;
                     case 4:
                         continuar = false;
@@ -124,10 +126,11 @@ public class GarajeController {
                         break;
                     case 4:
                         // Mostrar estadísticas
-                        mostrarEstadisticas();
+                        vehiculoManager.mostrarEstadisticas();
                         break;
                     case 5:
                         // Modificar vehículo
+                        ModificarVehiculo.setVehiculos(vehiculoManager.getVehiculos());
                         ModificarVehiculo.modificarVehiculo();
                         break;
                     case 6:
@@ -146,15 +149,16 @@ public class GarajeController {
 
     // Mostrar las estadísticas del kilometraje medio en un JDialog
     public void mostrarEstadisticas() {
-        double kilometrajeMedio = estadisticas.calcularKilometrajeMedio();
-        double sumaKilometrajes = estadisticas.calcularSumaKilometrajes();
+        double kilometrajeMedio = estadisticas.calcularKilometrajeMedio(vehiculos);
+        double sumaKilometrajes = estadisticas.calcularSumaKilometrajes(vehiculos);
         int cantidadVehiculos = vehiculoManager.getCantidadVehiculos();
         
-        vistaGomeria.mostrarEstadisticas(kilometrajeMedio, sumaKilometrajes, cantidadVehiculos);
+        vistaGomeria.mostrarEstadisticas(cantidadVehiculos, cantidadVehiculos, cantidadVehiculos, vehiculos);
     }
 
     // Método para formatear los valores a formato de moneda (en este caso, formato argentino) para el kilometraje medio
     private String formatCurrency(double amount) {
+        @SuppressWarnings("deprecation")
         java.text.NumberFormat currencyFormat = java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("es", "AR"));
         return currencyFormat.format(amount);
     }

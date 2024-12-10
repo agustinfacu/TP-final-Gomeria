@@ -9,10 +9,10 @@ import java.awt.*;
 import java.util.List;
 
 public class VehiculoSelector {
-    private List<Vehiculo> vehiculos;
-
-    public VehiculoSelector(List<Vehiculo> vehiculos) {
-        this.vehiculos = vehiculos;
+    private static List<Vehiculo> vehiculos;
+    
+        public VehiculoSelector(List<Vehiculo> vehiculos) {
+            VehiculoSelector.vehiculos = vehiculos;
     }
 
     public int seleccionarVehiculo(String titulo) {
@@ -60,4 +60,6 @@ public class VehiculoSelector {
         }
         return -1;
     }
+    //settter
+    public static void setVehiculos(List<Vehiculo> vehiculosList) {vehiculos = vehiculosList;}
 }

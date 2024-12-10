@@ -65,7 +65,5 @@ public class Garaje {
         }
     }
 
-    public double calcularKilometrajeMedio() {
-        return estadisticas.calcularKilometrajeMedio();
-    }
+   
 }
